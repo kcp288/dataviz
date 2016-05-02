@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="https://rawgit.com/susielu/d3-legend/master/d3-legend.min.js" charset="utf-8"></script>
+    <style>
+    .graph{
+      margin-left: auto;
+      margin-right: auto;
+      padding:30px;
+    }
+    rect:hover {
+      background-color:yellow;
+    }
+    </style>
+  </head>
+  <body>
+    <p>Starting out</p>
+    <div class = "graph" id="graph"> </div>
+  </body>
+  <script>
+  var jsonRect = [
+    {
+    "x_axis":0,
+    "y_axis":400-253,
+    "width":50,
+    "height":253,
+    "color":"blue"
+    },{
+    "x_axis":50,
+    "y_axis":400-320,
+    "width":50,
+    "height":320,
+    "color":"red"
+    },{
+    "x_axis":150,
+    "y_axis":400-60,
+    "width":50,
+    "height":60,
+    "color":"blue"
+    },{
+    "x_axis":200,
+    "y_axis":400-341,
+    "width":50,
+    "height":341,
+    "color":"red" 
+  }]
+
+  var s_group;
+
+  var ns_group;
+
+
+  var max_x = 0;
+  var max_y = 0;
+
+
+  var title = document.getElementById("graph");
+
+  for (var i = 0; i< jsonRect.length; i++) {
+    var temp_x = jsonRect[i].x_axis + jsonRect[i].width;
+    var temp_y = jsonRect[i].y_axis + jsonRect[i].height;
+
+    if (temp_x >= max_x) { max_x = temp_x;}
+    if (temp_y >= max_y) { max_y = temp_y;}
+  }
+
+  var graph = d3.select("div").append("svg")
+    .attr("width", max_x)
+    .attr("height", max_y)
+    .style("border", "1px solid black");
+
+  var bars = graph.selectAll("rect")
+    .data(jsonRect)
+    .enter()
+    .append("rect");
+
+  var barStyle = bars
+    .attr("x", function(d){ return d.x_axis; })
+    .attr("y", function(d){ return d.y_axis; })
+    .attr("width", function(d){ return d.width; })
+    .attr("height", function(d){ return d.height; })
+    .style("fill", function(d){ return d.color;});
+
+
+  var text = graph.selectAll("text")
+    .data(jsonRect)
+    .enter()
+    .append("text");
+
+  var textLabels = text
+    .attr("x", function(d){ return d.x_axis+10; })
+    .attr("y", function(d){ return d.y_axis-10; })
+    .text( function(d) { return d.height ;})
+    .attr("font-family", "sans-serif")
+    .attr("font-size", "20px")
+    .attr("fill", "#333");
+
+  var axisScale = d3.scale.linear()
+    .domain([0, max_x])
+    .range([0, max_y]);
+
+  var xAxis = d3.svg.axis()
+    .scale(axisScale)
+    .orient('bottom')
+    .tickSize(0)
+    .tickPadding(8)
+
+  var xAxisGroup = graph.append("g")
+    .attr('class', 'x axis')
+    .attr('transform', 'translate(0, ' + (max_y) + ')')
+    .call(xAxis);
+
+  var linear = d3.scale.linear()
+    .domain(['aa', 'ae'])
+    .range(['red','blue']);
+
+  var svg = d3.select("svg");
+  svg.append("g")
+    .attr("class", "legenLinear")
+    .attr("transform", "translate(20,20)");
+
+  var legendLinear = d3.legend.color()
+    .shapeWidth(30)
+    .orient('horizontal')
+    .scale(linear);
+
+  svg.select(".legendLinear")
+    .call(legendLinear);
+
+  /*
+  var bodySelection = d3.select("body");
+  
+  var svgSelect = bodySelection.append("svg")
+    .attr("width", 50);
+    .attr("height", 50);
+  
+  var circleSelect = svgSelect.append("circle")
+    .attr("cx", 25)
+    .attr("cy", 25)
+    .attr("r", 25)
+    .style("fill", "purple");
+  */
+  </script>
+</html>
